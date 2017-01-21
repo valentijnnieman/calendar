@@ -31,14 +31,11 @@ const store = new Vuex.Store({
   },
   mutations: {
     ADD_APPOINTMENT(state, new_appointment) {
-      console.log('zucht')
-      console.log(new_appointment)
       state.appointments.push(new_appointment)
     }
   },
   actions: {
     add_appointment({commit}, new_appointment) {
-      console.log('o ! gdo it!')
       commit('ADD_APPOINTMENT', new_appointment)
     }
   }
@@ -64,29 +61,30 @@ Vue.component('appointment', {
 Vue.component('appointment-form', {
   methods: {
     add_appointment() {
-      store.dispatch('add_appointment', this.new_appointment)
+      let push_this = Object.assign({}, this.new_appointment)
+      store.dispatch('add_appointment', push_this)
     }
   },
   data(){
     return  {
       new_appointment: {
         title: "", 
-        start_time: "",
-        end_time: "",
+        start_time: "00:00",
+        end_time: "02:00",
         description: ""
       }
     }
   },
   template: `
     <div>
-      <input v-model='new_appointment.title'> 
       <label>title</label>
-      <input v-model='new_appointment.start_time'> 
+      <input v-model='new_appointment.title'> 
       <label>start time</label>
-      <input v-model='new_appointment.end_time'> 
+      <input v-model='new_appointment.start_time'> 
       <label>end time</label>
-      <input v-model='new_appointment.description'> 
+      <input v-model='new_appointment.end_time'> 
       <label>description</label>
+      <input type='text' v-model='new_appointment.description'> 
       <button v-on:click='add_appointment'>jaja</button>
     </div>
   `

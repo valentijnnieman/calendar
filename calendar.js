@@ -82,8 +82,6 @@
 	  },
 	  mutations: {
 	    ADD_APPOINTMENT: function ADD_APPOINTMENT(state, new_appointment) {
-	      console.log('zucht');
-	      console.log(new_appointment);
 	      state.appointments.push(new_appointment);
 	    }
 	  },
@@ -91,7 +89,6 @@
 	    add_appointment: function add_appointment(_ref, new_appointment) {
 	      var commit = _ref.commit;
 
-	      console.log('o ! gdo it!');
 	      commit('ADD_APPOINTMENT', new_appointment);
 	    }
 	  }
@@ -112,21 +109,22 @@
 	_vue2.default.component('appointment-form', {
 	  methods: {
 	    add_appointment: function add_appointment() {
-	      store.dispatch('add_appointment', this.new_appointment);
+	      var push_this = Object.assign({}, this.new_appointment);
+	      store.dispatch('add_appointment', push_this);
 	    }
 	  },
 	  data: function data() {
 	    return {
 	      new_appointment: {
 	        title: "",
-	        start_time: "",
-	        end_time: "",
+	        start_time: "00:00",
+	        end_time: "02:00",
 	        description: ""
 	      }
 	    };
 	  },
 
-	  template: '\n    <div>\n      <input v-model=\'new_appointment.title\'> \n      <label>title</label>\n      <input v-model=\'new_appointment.start_time\'> \n      <label>start time</label>\n      <input v-model=\'new_appointment.end_time\'> \n      <label>end time</label>\n      <input v-model=\'new_appointment.description\'> \n      <label>description</label>\n      <button v-on:click=\'add_appointment\'>jaja</button>\n    </div>\n  '
+	  template: '\n    <div>\n      <label>title</label>\n      <input v-model=\'new_appointment.title\'> \n      <label>start time</label>\n      <input v-model=\'new_appointment.start_time\'> \n      <label>end time</label>\n      <input v-model=\'new_appointment.end_time\'> \n      <label>description</label>\n      <input type=\'text\' v-model=\'new_appointment.description\'> \n      <button v-on:click=\'add_appointment\'>jaja</button>\n    </div>\n  '
 	});
 
 	_vue2.default.component('time-table__item', {
