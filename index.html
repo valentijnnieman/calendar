@@ -1,10 +1,28 @@
 <head>
-
-  <script src='calendar.js'></script>
-
+  <link rel="stylesheet" type="text/css" href="vendor/foundation.min.css">
+  <link rel="stylesheet" type="text/css" href="assets/css/calendar.css">
 </head>
 <body>
-  <div id='calendar'>
-
+  <div class='row'>
+    <div id='calendar'>
+      <div class='small-12 medium-8 column'>
+        <h3>Today's appointments</h3>
+        <div class='time-table'>
+          <h5 class='time-table__title'>1 augustus 2016</h5>
+          <ul>
+            <template v-for='(time, index) in timetable'>
+              <time-table__item  v-bind:time="time" v-bind:index="index" v-bind:appointments="appointments"></time-table__item>
+            </template>
+          </ul>
+        </div>
+      </div>
+      <div class='small-12 medium-4 column'>
+        <div class='appointment-input'>
+          <appointment-form></appointment-form>
+        </div>
+      </div>
+    </div>
   </div>
+
+  <script src='calendar.js'></script>
 </body>

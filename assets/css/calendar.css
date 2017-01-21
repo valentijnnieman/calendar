@@ -1,0 +1,67 @@
+body {
+  color: white;
+  background-color: #4A5170;
+  padding-top: 46px;
+}
+.time-table {
+  background: #FFFFFF;
+  box-shadow: 0 0 4px 0 rgba(0,0,0,0.13), 0 18px 30px 0 rgba(0,0,0,0.13);
+  border-radius: 4px;
+  background: #FFFFFF;
+  border: 1px solid rgba(181,181,181,0.50);
+}
+.time-table__title {
+  border-bottom: 1px solid rgba(181,181,181,0.5);
+  padding: 16px 40px 16px 40px;
+  color: black;
+}
+
+.time-table ul {
+  padding: 13px 40px 42px 40px;
+  max-height: 670px;
+  overflow-y: scroll;
+}
+
+.time-table__item {
+  color: #B5B5B5;
+  list-style-type: none;
+}
+
+.hour {
+  width: 100%;
+  height: 25px;
+  display: block;
+}
+.hour__title {
+  float: left;
+  font-size: 12px;
+  min-width: 30px;
+  min-height: 19px;
+}
+.hour__line {
+  float: left;
+  width: 86%;
+  height: 13px;
+  margin-left: 10px;
+  border-bottom: 1px solid rgba(181,181,181,0.5);
+}
+.hour__line--hidden {
+  border-bottom: none;
+}
+
+.appointment {
+  background: #FF6255;
+  border: 1px solid #FF6255;
+  border-radius: 4px;
+  position: relative;
+  display: inline-block;
+  margin-left: 10px;
+  color: white;
+  padding: 8px;
+  max-width: 200px;
+}
+.appointment-input {
+  background: #F8F8F8;
+  border: 1px solid #DADADA;
+  border-radius: 1px;
+}

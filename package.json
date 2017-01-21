@@ -1,5 +1,5 @@
 {
-  "name": "calendar_challenge",
+  "name": "blendle-calendar",
   "version": "0.0.1",
   "description": "challenge for blendle :)",
   "main": "index.js",
@@ -25,6 +25,7 @@
     "webpack": "^1.14.0"
   },
   "dependencies": {
-    "vue": "^2.1.4"
+    "vue": "^2.1.4",
+    "vuex": "^2.1.1"
   }
 }
