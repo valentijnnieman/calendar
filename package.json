@@ -3,9 +3,13 @@
   "version": "0.0.1",
   "description": "challenge for blendle :)",
   "main": "index.js",
+  "watch": {
+    "build": "src/*.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack"
+    "build": "webpack",
+    "watch": "npm-watch"
   },
   "author": "Valentijn Nieman",
   "license": "ISC",
@@ -17,6 +21,7 @@
     "karma": "^1.4.0",
     "karma-chrome-launcher": "^2.0.0",
     "karma-jasmine": "^1.1.0",
+    "npm-watch": "^0.1.7",
     "webpack": "^1.14.0"
   },
   "dependencies": {

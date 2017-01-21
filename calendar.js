@@ -56,10 +56,17 @@
 	  this.poop = 'poop';
 	};
 
+	Vue.component('list', {
+	  template: '\n    <h1>I am a list!</h1>\n  '
+	});
+
 	new Vue({
 	  el: '#calendar',
 	  data: {
 	    test: "I am Testor!"
+	  },
+	  components: {
+	    list: 'list'
 	  }
 	});
 

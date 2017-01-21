@@ -6,9 +6,18 @@ class Test {
   }
 }
 
+Vue.component('list', {
+  template: `
+    <h1>I am a list!</h1>
+  `
+});
+
 new Vue({
   el: '#calendar',
   data: {
     test: "I am Testor!"
+  },
+  components: {
+    list: 'list'
   }
 });
