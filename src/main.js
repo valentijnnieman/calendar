@@ -30,17 +30,16 @@ const store = new Vuex.Store({
     ]
   },
   mutations: {
-    add_appointment(state) {
-      console.log("i got it! i got it")
-      let new_appointment = {
-        title: "WE IZJN LIJ", 
-        start_time: "07:00", 
-        start_index: 0,
-        end_time: "09:00", 
-        end_index: 0,
-        description: "Lorem ipsum something something" 
-      }
+    ADD_APPOINTMENT(state, new_appointment) {
+      console.log('zucht')
+      console.log(new_appointment)
       state.appointments.push(new_appointment)
+    }
+  },
+  actions: {
+    add_appointment({commit}, new_appointment) {
+      console.log('o ! gdo it!')
+      commit('ADD_APPOINTMENT', new_appointment)
     }
   }
 })
@@ -65,26 +64,31 @@ Vue.component('appointment', {
 Vue.component('appointment-form', {
   methods: {
     add_appointment() {
-      console.log('gonna do it! gonna do it!')
-      store.commit('add_appointment')
+      store.dispatch('add_appointment', this.new_appointment)
     }
   },
-  data: {
-    new_appointment: {
-      title: "", 
-      start_time: "",
-      end_time: "",
-      description: ""
+  data(){
+    return  {
+      new_appointment: {
+        title: "", 
+        start_time: "",
+        end_time: "",
+        description: ""
+      }
     }
   },
   template: `
-    <form> 
+    <div>
       <input v-model='new_appointment.title'> 
+      <label>title</label>
       <input v-model='new_appointment.start_time'> 
+      <label>start time</label>
       <input v-model='new_appointment.end_time'> 
+      <label>end time</label>
       <input v-model='new_appointment.description'> 
-      <button type='submit'>Add +</button>
-    </form>
+      <label>description</label>
+      <button v-on:click='add_appointment'>jaja</button>
+    </div>
   `
 })
 
@@ -105,6 +109,7 @@ Vue.component('time-table__item', {
 
 new Vue({
   el: '#calendar',
+  store,
   data: {
     timetable: [
       "00:00", "00:30", "01:00", "01:30",

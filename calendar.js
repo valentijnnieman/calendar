@@ -81,17 +81,18 @@
 	    }]
 	  },
 	  mutations: {
-	    add_appointment: function add_appointment(state) {
-	      console.log("i got it! i got it");
-	      var new_appointment = {
-	        title: "WE IZJN LIJ",
-	        start_time: "07:00",
-	        start_index: 0,
-	        end_time: "09:00",
-	        end_index: 0,
-	        description: "Lorem ipsum something something"
-	      };
+	    ADD_APPOINTMENT: function ADD_APPOINTMENT(state, new_appointment) {
+	      console.log('zucht');
+	      console.log(new_appointment);
 	      state.appointments.push(new_appointment);
+	    }
+	  },
+	  actions: {
+	    add_appointment: function add_appointment(_ref, new_appointment) {
+	      var commit = _ref.commit;
+
+	      console.log('o ! gdo it!');
+	      commit('ADD_APPOINTMENT', new_appointment);
 	    }
 	  }
 	});
@@ -111,19 +112,21 @@
 	_vue2.default.component('appointment-form', {
 	  methods: {
 	    add_appointment: function add_appointment() {
-	      console.log('gonna do it! gonna do it!');
-	      store.commit('add_appointment');
+	      store.dispatch('add_appointment', this.new_appointment);
 	    }
 	  },
-	  data: {
-	    new_appointment: {
-	      title: "",
-	      start_time: "",
-	      end_time: "",
-	      description: ""
-	    }
+	  data: function data() {
+	    return {
+	      new_appointment: {
+	        title: "",
+	        start_time: "",
+	        end_time: "",
+	        description: ""
+	      }
+	    };
 	  },
-	  template: '\n    <form> \n      <input v-model=\'new_appointment.title\'> \n      <input v-model=\'new_appointment.start_time\'> \n      <input v-model=\'new_appointment.end_time\'> \n      <input v-model=\'new_appointment.description\'> \n      <button type=\'submit\'>Add +</button>\n    </form>\n  '
+
+	  template: '\n    <div>\n      <input v-model=\'new_appointment.title\'> \n      <label>title</label>\n      <input v-model=\'new_appointment.start_time\'> \n      <label>start time</label>\n      <input v-model=\'new_appointment.end_time\'> \n      <label>end time</label>\n      <input v-model=\'new_appointment.description\'> \n      <label>description</label>\n      <button v-on:click=\'add_appointment\'>jaja</button>\n    </div>\n  '
 	});
 
 	_vue2.default.component('time-table__item', {
@@ -133,6 +136,7 @@
 
 	new _vue2.default({
 	  el: '#calendar',
+	  store: store,
 	  data: {
 	    timetable: ["00:00", "00:30", "01:00", "01:30", "02:00", "02:30", "03:00", "03:30", "04:00", "04:30", "05:00", "05:30", "06:00", "06:30", "07:00", "07:30", "08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00", "21:30", "22:00", "22:30", "23:00", "23:30"]
 	  },
