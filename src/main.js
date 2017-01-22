@@ -1,59 +1,101 @@
 import Vue from 'vue/dist/vue.js'
 import Vuex from 'vuex'
+import createPersistedState from 'vuex-persistedstate'
 
 Vue.use(Vuex)
 
 const store = new Vuex.Store({
   state: {
-    appointments: [
-      { title: "Sprint retrospective", 
-        start_time: "09:30",
-        start_index: 0,
-        end_time: "13:00",
-        end_index: 0,
-        description: "Lorem ipsum something something"
-      },
-      { title: "Poepen op de toilet", 
-        start_time: "14:00", 
-        start_index: 0,
-        end_time: "17:00", 
-        end_index: 0,
-        description: "Lorem ipsum something something" 
-      },
-      { title: "Een buks kopen", 
-        start_time: "14:00", 
-        start_index: 0,
-        end_time: "16:00", 
-        end_index: 0,
-        description: "Lorem ipsum something something" 
-      }
-    ]
+    appointments: []
   },
   mutations: {
     ADD_APPOINTMENT(state, new_appointment) {
       state.appointments.push(new_appointment)
+    },
+    DELETE_APPOINTMENT(state, index) {
+      if(index != -1) {
+        state.appointments.splice(index, 1)
+      }
+    },
+    DEFAULT_APPOINTMENTS(state) {
+      state.appointments = [ 
+        { title: "Sprint retrospective", 
+          start_time: "09:30",
+          start_index: 0,
+          end_time: "10:30",
+          end_index: 0,
+          description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam lobortis imperdiet consectetur. Donec eget accumsan dui. Proin consequat augue"
+        },
+        { title: "All hands", 
+          start_time: "14:00", 
+          start_index: 0,
+          end_time: "15:00", 
+          end_index: 0,
+          description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam lobortis imperdiet consectetur. Donec eget accumsan dui. Proin consequat augue" 
+        },
+        { title: "Database migration", 
+          start_time: "13:00", 
+          start_index: 0,
+          end_time: "16:00", 
+          end_index: 0,
+          description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam lobortis imperdiet consectetur. Donec eget accumsan dui. Proin consequat augue facilisis ex placerat gravida." 
+        }
+      ]
     }
   },
   actions: {
     add_appointment({commit}, new_appointment) {
       commit('ADD_APPOINTMENT', new_appointment)
+    },
+    delete_appointment({commit}, index) {
+      commit('DELETE_APPOINTMENT', index)
     }
-  }
+  },
+  plugins: [createPersistedState()]
 })
 
+if (window.localStorage.length < 1) {
+  store.commit('DEFAULT_APPOINTMENTS')
+}
+
 Vue.component('appointment', {
-  props: ['appointment'],
+  props: ['appointment', 'index'],
+  data() { return { show_modal: false } },
+  methods: {
+    toggle_modal() {
+      this.show_modal = !this.show_modal 
+    }
+  },
   computed: {
     height() {
+      // magic css height style for appointment divs
       let difference = Math.abs(this.appointment.start_index - this.appointment.end_index)
-      console.log(`start: ${this.appointment.start_index}, end: ${this.appointment.end_index}, dif: ${difference}`)
       return `height: ${(difference * 25)}px;`
     }
   },
   template: `
-    <div class='appointment' :style="height">
+    <div class='appointment' :style="height" v-on:click='toggle_modal'>
       <p class='appointment__title'>{{ appointment.title }}<span>{{appointment.start_time}}-{{appointment.end_time}}</span></p>
       <p class='appointment__description'>{{ appointment.description }}</p>
+      <div class='modal-container' v-if="show_modal == true">
+        <appointment-modal v-bind:appointment='appointment' v-bind:index='index'></appointment-modal>
+      </div>
+    </div>
+  `
+})
+
+Vue.component('appointment-modal', {
+  props: ['appointment', 'index'],
+  methods: {
+    delete_appointment() {
+      store.dispatch('delete_appointment', this.index)
+    }
+  },
+  template: `
+    <div class='appointment-modal'>
+      <p class='appointment__title'>{{ appointment.title }}<span>{{appointment.start_time}}-{{appointment.end_time}}</span></p>
+      <p class='appointment__description'>{{ appointment.description }}</p>
+      <button class='button button--red' v-on:click='delete_appointment'>Delete</button>
     </div>
   `
 })
@@ -61,8 +103,8 @@ Vue.component('appointment', {
 Vue.component('appointment-form', {
   methods: {
     add_appointment() {
-      let push_this = Object.assign({}, this.new_appointment)
-      store.dispatch('add_appointment', push_this)
+      let appointment = Object.assign({}, this.new_appointment) // copy/clone appointment so it saves
+      store.dispatch('add_appointment', appointment)
     }
   },
   data(){
@@ -77,15 +119,15 @@ Vue.component('appointment-form', {
   },
   template: `
     <div>
-      <label>title</label>
-      <input v-model='new_appointment.title'> 
-      <label>start time</label>
-      <input v-model='new_appointment.start_time'> 
-      <label>end time</label>
-      <input v-model='new_appointment.end_time'> 
-      <label>description</label>
-      <input type='text' v-model='new_appointment.description'> 
-      <button v-on:click='add_appointment'>jaja</button>
+      <label class='appointment-panel__label' for='title'>Title</label>
+      <input class='appointment-panel__input' v-model='new_appointment.title' id='title'> 
+      <label class='appointment-panel__label' for='start'>Start time</label>
+      <input class='appointment-panel__input' v-model='new_appointment.start_time' id='start'> 
+      <label class='appointment-panel__label' for='end'>End time</label>
+      <input class='appointment-panel__input' v-model='new_appointment.end_time' id='end'> 
+      <label class='appointment-panel__label' for='description'>Description</label>
+      <input class='appointment-panel__input appointment-panel__input--description' type='text' v-model='new_appointment.description' id='description'> 
+      <button class='button button--green' v-on:click='add_appointment'>Save</button>
     </div>
   `
 })
@@ -99,7 +141,7 @@ Vue.component('time-table__item', {
         <div class='hour__title' v-else></div>
         <div class='hour__line' v-if='time.slice(-2) == "00"'></div>
         <div class='hour__line hour__line--hidden' v-else></div>
-        <appointment v-for='appointment in appointments' v-if='appointment.start_index == index' v-bind:appointment="appointment"></appointment> 
+        <appointment v-for='(appointment, i) in appointments' v-if='appointment.start_index == index' v-bind:appointment="appointment" v-bind:index='i'></appointment> 
       </div>
     </li>
   `
@@ -120,6 +162,7 @@ new Vue({
   computed: {
     appointments() {
       for (let appointment of store.state.appointments) {
+        // get index of start and end times in timetable array
         appointment.start_index = this.timetable.indexOf(appointment.start_time)
         appointment.end_index = this.timetable.indexOf(appointment.end_time)
       }
