@@ -1,4 +1,6 @@
-export Vue.component('time-modal', {
+import Vue from 'vue/dist/vue.js'
+
+module.exports = Vue.component('time-input', {
   template: `
     <select class='appointment-panel__input appointment-panel__input--calendar' @input="$emit('input', $event.target.value)">
       <option value="00:00">00:00</option>
