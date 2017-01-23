@@ -23,23 +23,17 @@ const store = new Vuex.Store({
       state.appointments = [ 
         { title: "Sprint retrospective", 
           start_time: "09:30",
-          start_index: 0,
           end_time: "10:30",
-          end_index: 0,
           description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam lobortis imperdiet consectetur. Donec eget accumsan dui. Proin consequat augue"
         },
         { title: "All hands", 
           start_time: "14:00", 
-          start_index: 0,
           end_time: "15:00", 
-          end_index: 0,
           description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam lobortis imperdiet consectetur. Donec eget accumsan dui. Proin consequat augue" 
         },
         { title: "Database migration", 
           start_time: "13:00", 
-          start_index: 0,
           end_time: "16:00", 
-          end_index: 0,
           description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam lobortis imperdiet consectetur. Donec eget accumsan dui. Proin consequat augue facilisis ex placerat gravida." 
         }
       ]
@@ -72,11 +66,17 @@ Vue.component('appointment', {
     height() {
       // magic css height style for appointment divs
       let difference = Math.abs(this.appointment.start_index - this.appointment.end_index)
-      return `height: ${(difference * 25)}px;`
+      return difference * 25
+    },
+    width() {
+      return this.appointment.width + '%'
+    },
+    modifier() {
+      return this.appointment.modifier + '%'
     }
   },
   template: `
-    <div class='appointment' :style="height" v-on:click='toggle_modal'>
+    <div class='appointment' :style="{height: height, width: width}" v-on:click='toggle_modal'>
       <p class='appointment__title'>{{ appointment.title }}<span class='appointment__time'>{{appointment.start_time}}-{{appointment.end_time}}</span></p>
       <p class='appointment__description'>{{ appointment.description }}</p>
       <div class='modal-container' v-if="show_modal == true">
@@ -139,14 +139,19 @@ Vue.component('appointment-form', {
 
 Vue.component('time-table__item', {
   props: ['time', 'index', 'appointments'],
+  computed: {
+    isHidden() {
+      return this.time.slice(-2) == "00"     
+    }
+  },
   template: `
     <li class='time-table__item' v-bind:id='index'>
       <div class='hour'>
         <div class='hour__title' v-if='time.slice(-2) == "00"'>{{ time }}</div>
         <div class='hour__title' v-else></div>
-        <div class='hour__line' v-if='time.slice(-2) == "00"'></div>
-        <div class='hour__line hour__line--hidden' v-else></div>
-        <appointment v-for='(appointment, i) in appointments' v-if='appointment.start_index == index' v-bind:appointment="appointment" v-bind:index='i'></appointment> 
+        <div class='hour__line' v-bind:class="{ 'hour__line--hidden': !isHidden }">
+          <appointment v-for='(appointment, i) in appointments' v-if='appointment.start_index == index' v-bind:appointment="appointment" v-bind:index='i' ></appointment> 
+        </div>
       </div>
     </li>
   `
@@ -165,12 +170,34 @@ new Vue({
       "18:30", "19:00", "19:30", "20:00", "20:30", "21:00", "21:30", "22:00", "22:30", "23:00", "23:30"
     ]
   },
+  methods: {
+    filled_times(start_time, end_time) {
+      let times = []
+      for(let i = start_time; i <= end_time; i++) {
+        times.push(i)
+      }
+      return times
+    }
+  },
   computed: {
     appointments() {
+      let previous_appointments = []
       for (let appointment of store.state.appointments) {
         // get index of start and end times in timetable array
+        appointment.width = 100 
         appointment.start_index = this.timetable.indexOf(appointment.start_time)
         appointment.end_index = this.timetable.indexOf(appointment.end_time)
+        for(let previous of previous_appointments) {
+          // 4 - 6 .... 5-7  
+          let new_times = this.filled_times(appointment.start_index, appointment.end_index)
+          let previous_times = this.filled_times(previous.start_index, previous.end_index)
+          if(new_times.some(v => previous_times.includes(v))) {
+            appointment.width = appointment.width / 2
+            appointment.modifier = appointment.width
+            previous.width = previous.width / 2 
+          }
+        }
+        previous_appointments.push(appointment)
       }
       return store.state.appointments
     }

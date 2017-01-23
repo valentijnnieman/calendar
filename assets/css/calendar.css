@@ -37,7 +37,8 @@
 .hour__line {
   float: left;
   width: 86%;
-  height: 13px;
+  margin-top: 10px;
+  height: 1px;
   margin-left: 10px;
   border-bottom: 1px solid rgba(181,181,181,0.5);
 }
@@ -51,11 +52,10 @@
   border-radius: 4px;
   position: relative;
   display: inline-block;
-  margin-left: 10px;
   color: white;
   padding: 4px;
   overflow: hidden;
-  max-width: 347px;
+  float: left;
 }
 .appointment__title {
   font-size: 14px;

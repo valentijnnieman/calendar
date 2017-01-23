@@ -82,21 +82,15 @@
 	    DEFAULT_APPOINTMENTS: function DEFAULT_APPOINTMENTS(state) {
 	      state.appointments = [{ title: "Sprint retrospective",
 	        start_time: "09:30",
-	        start_index: 0,
 	        end_time: "10:30",
-	        end_index: 0,
 	        description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam lobortis imperdiet consectetur. Donec eget accumsan dui. Proin consequat augue"
 	      }, { title: "All hands",
 	        start_time: "14:00",
-	        start_index: 0,
 	        end_time: "15:00",
-	        end_index: 0,
 	        description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam lobortis imperdiet consectetur. Donec eget accumsan dui. Proin consequat augue"
 	      }, { title: "Database migration",
 	        start_time: "13:00",
-	        start_index: 0,
 	        end_time: "16:00",
-	        end_index: 0,
 	        description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam lobortis imperdiet consectetur. Donec eget accumsan dui. Proin consequat augue facilisis ex placerat gravida."
 	      }];
 	    }
@@ -135,10 +129,16 @@
 	    height: function height() {
 	      // magic css height style for appointment divs
 	      var difference = Math.abs(this.appointment.start_index - this.appointment.end_index);
-	      return 'height: ' + difference * 25 + 'px;';
+	      return difference * 25;
+	    },
+	    width: function width() {
+	      return this.appointment.width + '%';
+	    },
+	    modifier: function modifier() {
+	      return this.appointment.modifier + '%';
 	    }
 	  },
-	  template: '\n    <div class=\'appointment\' :style="height" v-on:click=\'toggle_modal\'>\n      <p class=\'appointment__title\'>{{ appointment.title }}<span class=\'appointment__time\'>{{appointment.start_time}}-{{appointment.end_time}}</span></p>\n      <p class=\'appointment__description\'>{{ appointment.description }}</p>\n      <div class=\'modal-container\' v-if="show_modal == true">\n        <appointment-modal v-bind:appointment=\'appointment\' v-bind:index=\'index\'></appointment-modal>\n      </div>\n    </div>\n  '
+	  template: '\n    <div class=\'appointment\' :style="{height: height, width: width}" v-on:click=\'toggle_modal\'>\n      <p class=\'appointment__title\'>{{ appointment.title }}<span class=\'appointment__time\'>{{appointment.start_time}}-{{appointment.end_time}}</span></p>\n      <p class=\'appointment__description\'>{{ appointment.description }}</p>\n      <div class=\'modal-container\' v-if="show_modal == true">\n        <appointment-modal v-bind:appointment=\'appointment\' v-bind:index=\'index\'></appointment-modal>\n      </div>\n    </div>\n  '
 	});
 
 	_vue2.default.component('appointment-modal', {
@@ -174,7 +174,12 @@
 
 	_vue2.default.component('time-table__item', {
 	  props: ['time', 'index', 'appointments'],
-	  template: '\n    <li class=\'time-table__item\' v-bind:id=\'index\'>\n      <div class=\'hour\'>\n        <div class=\'hour__title\' v-if=\'time.slice(-2) == "00"\'>{{ time }}</div>\n        <div class=\'hour__title\' v-else></div>\n        <div class=\'hour__line\' v-if=\'time.slice(-2) == "00"\'></div>\n        <div class=\'hour__line hour__line--hidden\' v-else></div>\n        <appointment v-for=\'(appointment, i) in appointments\' v-if=\'appointment.start_index == index\' v-bind:appointment="appointment" v-bind:index=\'i\'></appointment> \n      </div>\n    </li>\n  '
+	  computed: {
+	    isHidden: function isHidden() {
+	      return this.time.slice(-2) == "00";
+	    }
+	  },
+	  template: '\n    <li class=\'time-table__item\' v-bind:id=\'index\'>\n      <div class=\'hour\'>\n        <div class=\'hour__title\' v-if=\'time.slice(-2) == "00"\'>{{ time }}</div>\n        <div class=\'hour__title\' v-else></div>\n        <div class=\'hour__line\' v-bind:class="{ \'hour__line--hidden\': !isHidden }">\n          <appointment v-for=\'(appointment, i) in appointments\' v-if=\'appointment.start_index == index\' v-bind:appointment="appointment" v-bind:index=\'i\' ></appointment> \n        </div>\n      </div>\n    </li>\n  '
 	});
 
 	new _vue2.default({
@@ -184,8 +189,20 @@
 	  data: {
 	    timetable: ["00:00", "00:30", "01:00", "01:30", "02:00", "02:30", "03:00", "03:30", "04:00", "04:30", "05:00", "05:30", "06:00", "06:30", "07:00", "07:30", "08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00", "21:30", "22:00", "22:30", "23:00", "23:30"]
 	  },
+	  methods: {
+	    filled_times: function filled_times(start_time, end_time) {
+	      var times = [];
+	      for (var i = start_time; i <= end_time; i++) {
+	        times.push(i);
+	      }
+	      return times;
+	    }
+	  },
 	  computed: {
 	    appointments: function appointments() {
+	      var _this = this;
+
+	      var previous_appointments = [];
 	      var _iteratorNormalCompletion = true;
 	      var _didIteratorError = false;
 	      var _iteratorError = undefined;
@@ -195,8 +212,48 @@
 	          var appointment = _step.value;
 
 	          // get index of start and end times in timetable array
+	          appointment.width = 100;
 	          appointment.start_index = this.timetable.indexOf(appointment.start_time);
 	          appointment.end_index = this.timetable.indexOf(appointment.end_time);
+	          var _iteratorNormalCompletion2 = true;
+	          var _didIteratorError2 = false;
+	          var _iteratorError2 = undefined;
+
+	          try {
+	            var _loop = function _loop() {
+	              var previous = _step2.value;
+
+	              // 4 - 6 .... 5-7  
+	              var new_times = _this.filled_times(appointment.start_index, appointment.end_index);
+	              var previous_times = _this.filled_times(previous.start_index, previous.end_index);
+	              if (new_times.some(function (v) {
+	                return previous_times.includes(v);
+	              })) {
+	                appointment.width = appointment.width / 2;
+	                appointment.modifier = appointment.width;
+	                previous.width = previous.width / 2;
+	              }
+	            };
+
+	            for (var _iterator2 = previous_appointments[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+	              _loop();
+	            }
+	          } catch (err) {
+	            _didIteratorError2 = true;
+	            _iteratorError2 = err;
+	          } finally {
+	            try {
+	              if (!_iteratorNormalCompletion2 && _iterator2.return) {
+	                _iterator2.return();
+	              }
+	            } finally {
+	              if (_didIteratorError2) {
+	                throw _iteratorError2;
+	              }
+	            }
+	          }
+
+	          previous_appointments.push(appointment);
 	        }
 	      } catch (err) {
 	        _didIteratorError = true;
