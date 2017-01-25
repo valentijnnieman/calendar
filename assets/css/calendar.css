@@ -141,11 +141,11 @@ button.button--round:hover {
 }
 .button--round {
   border-radius: 100%;
-  width: 20px;
-  height: 20px;
+  width: 28px;
+  height: 28px;
   float: right;
-  margin-right: 21px;
-  margin-top: 11px;
+  margin-right: 16px;
+  margin-top: 16px;
 }
 .button--green{
   color: white;
