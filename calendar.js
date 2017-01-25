@@ -179,7 +179,7 @@
 	      return this.appointment.modifier + '%';
 	    }
 	  },
-	  template: '\n    <div v-if="appointment.hidden" class=\'appointment appointment--hidden\' :style="{width: 100 / width + \'%\'}">{{ appointment.start_time }} </div>\n    <div v-else class=\'appointment\' :style="{height: height, width: 100 / width + \'%\', float: alignment}" v-on:click=\'toggle_modal\'>\n      <p class=\'appointment-top\'>\n        <div class=\'appointment-top__title\'>{{ appointment.title }}</div>\n        <span class=\'appointment-top__time\'>{{appointment.start_time}}-{{appointment.end_time}}</span>\n      </p>\n      <p class=\'appointment__description\'>{{ appointment.description }}</p>\n      <div class=\'modal-container\' v-if="show_modal == true">\n        <appointment-modal :appointment=\'appointment\' :time_index=\'time_index\' :appointment_index=\'appointment_index\'></appointment-modal>\n      </div>\n    </div>\n  '
+	  template: '\n    <transition name=\'appointment\'>\n      <div class=\'appointment\' :style="{height: height, width: 100 / width + \'%\', float: alignment}" v-on:click=\'toggle_modal\'>\n        <p class=\'appointment-top\'>\n          <div class=\'appointment-top__title\'>{{ appointment.title }}</div>\n          <span class=\'appointment-top__time\'>{{appointment.start_time}}-{{appointment.end_time}}</span>\n        </p>\n        <p class=\'appointment__description\'>{{ appointment.description }}</p>\n        <div class=\'modal-container\' v-if="show_modal == true">\n          <appointment-modal :appointment=\'appointment\' :time_index=\'time_index\' :appointment_index=\'appointment_index\'></appointment-modal>\n        </div>\n      </div>\n    </transition>\n  '
 	});
 
 	_vue2.default.component('appointment-modal', {
@@ -229,13 +229,16 @@
 	    };
 	  },
 
-	  template: '\n    <div>\n      <label class=\'appointment-panel__label\' for=\'title\'>Title</label>\n      <input class=\'appointment-panel__input\' v-model=\'new_appointment.title\' id=\'title\'> \n      <label class=\'appointment-panel__label\' for=\'start\'>Start time</label>\n      <div class=\'calendar-icon\'></div>\n      <time-input v-model=\'new_appointment.start_time\'></time-input>\n      <label class=\'appointment-panel__label\' for=\'end\'>End time</label>\n      <div class=\'calendar-icon\'></div>\n      <time-input v-model=\'new_appointment.end_time\'></time-input>\n      <label class=\'appointment-panel__label\' for=\'description\'>Description</label>\n      <textarea class=\'appointment-panel__input appointment-panel__input--description\' v-model=\'new_appointment.description\' id=\'description\'></textarea>\n      <button class=\'button button--green\' v-on:click=\'add_appointment\'>Save</button>\n      <input type=\'reset\' value=\'Cancel\'></input>\n    </div>\n  '
+	  template: '\n    <div>\n      <label class=\'appointment-panel__label\' for=\'title\'>Title</label>\n      <input class=\'appointment-panel__input\' v-model=\'new_appointment.title\' id=\'title\'> \n      <label class=\'appointment-panel__label\' for=\'start\'>Start time</label>\n      <div class=\'calendar-icon\'></div>\n      <time-input v-model=\'new_appointment.start_time\'></time-input>\n      <label class=\'appointment-panel__label\' for=\'end\'>End time</label>\n      <div class=\'calendar-icon\'></div>\n      <time-input v-model=\'new_appointment.end_time\'></time-input>\n      <label class=\'appointment-panel__label\' for=\'description\'>Description</label>\n      <textarea class=\'appointment-panel__input appointment-panel__input--description\' v-model=\'new_appointment.description\' id=\'description\'></textarea>\n      <button class=\'button button--green\' v-on:click=\'add_appointment\'>Save</button>\n    </div>\n  '
 	});
 
 	new _vue2.default({
 	  el: '#calendar',
 	  store: _timetable2.default,
 	  components: { timeInput: _timeInput2.default },
+	  data: {
+	    appointment_panel_show: true
+	  },
 	  computed: {
 	    timetable: function timetable() {
 	      if (window.localStorage.length < 1) {

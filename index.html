@@ -10,6 +10,7 @@
         <h3>Today's appointments</h3>
         <div class='time-table'>
           <h5 class='time-table__title'>1 augustus 2016</h5>
+          <button v-on:click="appointment_panel_show = !appointment_panel_show" class='button button--round button--green'>+</button>
           <ul>
             <template v-for='(time, index) in timetable'>
               <time-table__item  :time="time.time" :index="index" :appointments="time.appointments" :alignment="time.alignment"></time-table__item>
@@ -18,9 +19,12 @@
         </div>
       </div>
       <div class='small-12 medium-4 column lp-0'>
-        <div class='appointment-panel'>
-          <appointment-form :timetable='timetable'></appointment-form>
-        </div>
+        <transition name='appointment-panel'>
+          <div class='appointment-panel' v-if="appointment_panel_show">
+            <appointment-form :timetable='timetable'></appointment-form>
+          <button v-on:click="appointment_panel_show = !appointment_panel_show" class='button'>Cancel</button>
+          </div>
+        </transition>
       </div>
     </div>
   </div>

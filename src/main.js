@@ -74,17 +74,18 @@ Vue.component('appointment', {
     }
   },
   template: `
-    <div v-if="appointment.hidden" class='appointment appointment--hidden' :style="{width: 100 / width + '%'}">{{ appointment.start_time }} </div>
-    <div v-else class='appointment' :style="{height: height, width: 100 / width + '%', float: alignment}" v-on:click='toggle_modal'>
-      <p class='appointment-top'>
-        <div class='appointment-top__title'>{{ appointment.title }}</div>
-        <span class='appointment-top__time'>{{appointment.start_time}}-{{appointment.end_time}}</span>
-      </p>
-      <p class='appointment__description'>{{ appointment.description }}</p>
-      <div class='modal-container' v-if="show_modal == true">
-        <appointment-modal :appointment='appointment' :time_index='time_index' :appointment_index='appointment_index'></appointment-modal>
+    <transition name='appointment'>
+      <div class='appointment' :style="{height: height, width: 100 / width + '%', float: alignment}" v-on:click='toggle_modal'>
+        <p class='appointment-top'>
+          <div class='appointment-top__title'>{{ appointment.title }}</div>
+          <span class='appointment-top__time'>{{appointment.start_time}}-{{appointment.end_time}}</span>
+        </p>
+        <p class='appointment__description'>{{ appointment.description }}</p>
+        <div class='modal-container' v-if="show_modal == true">
+          <appointment-modal :appointment='appointment' :time_index='time_index' :appointment_index='appointment_index'></appointment-modal>
+        </div>
       </div>
-    </div>
+    </transition>
   `
 })
 
@@ -149,7 +150,6 @@ Vue.component('appointment-form', {
       <label class='appointment-panel__label' for='description'>Description</label>
       <textarea class='appointment-panel__input appointment-panel__input--description' v-model='new_appointment.description' id='description'></textarea>
       <button class='button button--green' v-on:click='add_appointment'>Save</button>
-      <input type='reset' value='Cancel'></input>
     </div>
   `
 })
@@ -159,6 +159,9 @@ new Vue({
   el: '#calendar',
   store,
   components: {timeInput},
+  data: {
+    appointment_panel_show: true 
+  },
   computed: {
     timetable() {
       if(window.localStorage.length < 1) {
