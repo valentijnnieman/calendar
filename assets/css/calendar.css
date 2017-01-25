@@ -47,24 +47,34 @@
 }
 
 .appointment {
-  background: #FF6255;
-  border: 1px solid #FF6255;
+  background-color: #FF6255;
   border-radius: 4px;
   position: relative;
   display: inline-block;
   color: white;
-  padding: 4px;
+  padding: 5px;
   overflow: hidden;
-  float: left;
+  height: 25px;
 }
-.appointment__title {
-  font-size: 14px;
-  float: left;
+.appointment--hidden {
+  background-color: magenta;
+  opacity: 0.2;
+}
+.appointment-top{
   display: block;
   width: 100%;
   margin-bottom: 0px;
 }
-.appointment__time{
+.appointment-top__title {
+  font-size: 14px;
+  float: left;
+  width: 70%;
+  text-overflow: ellipsis;
+  overflow-x: hidden;
+  max-height: 19px;
+}
+.appointment-top__time{
+  font-size: 14px;
   float: right;
   color: rgba(255,255,255,0.8);
 }

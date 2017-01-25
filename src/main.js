@@ -2,95 +2,97 @@ import Vue from 'vue/dist/vue.js'
 import Vuex from 'vuex'
 import createPersistedState from 'vuex-persistedstate'
 
+import store from './stores/timetable.js'
 import timeInput from './components/time-input.js'
 
 Vue.use(Vuex)
 
-const store = new Vuex.Store({
-  state: {
-    appointments: []
-  },
-  mutations: {
-    ADD_APPOINTMENT(state, new_appointment) {
-      state.appointments.push(new_appointment)
-    },
-    DELETE_APPOINTMENT(state, index) {
-      if(index != -1) {
-        state.appointments.splice(index, 1)
-      }
-    },
-    DEFAULT_APPOINTMENTS(state) {
-      state.appointments = [ 
-        { title: "Sprint retrospective", 
-          start_time: "09:30",
-          end_time: "10:30",
-          description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam lobortis imperdiet consectetur. Donec eget accumsan dui. Proin consequat augue"
-        },
-        { title: "All hands", 
-          start_time: "14:00", 
-          end_time: "15:00", 
-          description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam lobortis imperdiet consectetur. Donec eget accumsan dui. Proin consequat augue" 
-        },
-        { title: "Database migration", 
-          start_time: "13:00", 
-          end_time: "16:00", 
-          description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam lobortis imperdiet consectetur. Donec eget accumsan dui. Proin consequat augue facilisis ex placerat gravida." 
-        }
-      ]
+Vue.component('time-table__item', {
+  props: ['time', 'index', 'appointments', 'alignment'],
+  computed: {
+    isHidden() {
+      return this.time.slice(-2) == "00"     
     }
   },
-  actions: {
-    add_appointment({commit}, new_appointment) {
-      commit('ADD_APPOINTMENT', new_appointment)
-    },
-    delete_appointment({commit}, index) {
-      commit('DELETE_APPOINTMENT', index)
-    }
-  },
-  plugins: [createPersistedState()]
-})
-
-if (window.localStorage.length < 1) {
-  store.commit('DEFAULT_APPOINTMENTS')
-}
+  template: `
+    <li class='time-table__item' :id='index'>
+      <div class='hour'>
+        <div class='hour__title' v-if='time.slice(-2) == "00"'>{{ time }}</div>
+        <div class='hour__title' v-else></div>
+        <div class='hour__line' :class="{ 'hour__line--hidden': !isHidden }">
+          <appointment v-for='(appointment, i) in appointments' :appointment="appointment" :time_index=index :appointment_index='i' :alignment="alignment"></appointment> 
+        </div>
+      </div>
+    </li>
+  `
+});
 
 Vue.component('appointment', {
-  props: ['appointment', 'index'],
+  props: ['appointment', 'time_index', 'appointment_index', 'hidden', 'alignment'],
   data() { return { show_modal: false } },
   methods: {
     toggle_modal() {
       this.show_modal = !this.show_modal 
+    },
+    next_appointment() {
+      let all_appointments = this.$store.getters.all_appointments
     }
   },
   computed: {
+    is_hidden() {
+      console.log(typeof(this.hidden))
+    },
     height() {
       // magic css height style for appointment divs
       let difference = Math.abs(this.appointment.start_index - this.appointment.end_index)
       return difference * 25
     },
     width() {
-      return this.appointment.width + '%'
+      let all_appointments = this.$store.getters.all_appointments
+      let overlap_amount = 0
+      for(let taken_appointments of all_appointments ) {
+        for(let taken_appointment of taken_appointments) {
+          let is_overlapping = taken_appointment.children_appointments.map((index)=> this.appointment.children_appointments.includes(index))
+          console.log(is_overlapping)
+          if(is_overlapping.some((t)=>t == true)) {
+            is_overlapping = true
+          } else is_overlapping = false
+          console.log(is_overlapping)
+
+          if(is_overlapping) {
+            console.log("appointment: ")
+            console.log(this.appointment.title)
+            console.log()
+            overlap_amount++
+          }
+        }
+      }
+      return overlap_amount
     },
     modifier() {
       return this.appointment.modifier + '%'
     }
   },
   template: `
-    <div class='appointment' :style="{height: height, width: width}" v-on:click='toggle_modal'>
-      <p class='appointment__title'>{{ appointment.title }}<span class='appointment__time'>{{appointment.start_time}}-{{appointment.end_time}}</span></p>
+    <div v-if="appointment.hidden" class='appointment appointment--hidden' :style="{width: 100 / width + '%'}">{{ appointment.start_time }} </div>
+    <div v-else class='appointment' :style="{height: height, width: 100 / width + '%', float: alignment}" v-on:click='toggle_modal'>
+      <p class='appointment-top'>
+        <div class='appointment-top__title'>{{ appointment.title }}</div>
+        <span class='appointment-top__time'>{{appointment.start_time}}-{{appointment.end_time}}</span>
+      </p>
       <p class='appointment__description'>{{ appointment.description }}</p>
       <div class='modal-container' v-if="show_modal == true">
-        <appointment-modal v-bind:appointment='appointment' v-bind:index='index'></appointment-modal>
+        <appointment-modal :appointment='appointment' :time_index='time_index' :appointment_index='appointment_index'></appointment-modal>
       </div>
     </div>
   `
 })
 
 Vue.component('appointment-modal', {
-  props: ['appointment', 'index'],
+  props: ['appointment', 'time_index', 'appointment_index'],
   methods: {
     delete_appointment() {
-      store.dispatch('delete_appointment', this.index)
+      store.dispatch('delete_appointment', this.time_index, this.appointment_index)
     }
   },
   template: `
@@ -103,9 +105,24 @@ Vue.component('appointment-modal', {
 })
 
 Vue.component('appointment-form', {
+  props: ['timetable'],
   methods: {
+    children_appointments(start_time, end_time) {
+      let times = [start_time]
+      for(let i = start_time+1; i < end_time; i++) {
+        times.push(i)
+      }
+      return times
+    },
     add_appointment() {
       let appointment = Object.assign({}, this.new_appointment) // copy/clone appointment so it saves
+      // compute some attributes for use in rendering
+      //appointment.start_index = this.timetable.indexOf(appointment.start_time)
+      appointment.start_index = this.timetable.map((t)=>t.time).indexOf(appointment.start_time)
+      //appointment.end_index = this.timetable.indexOf(appointment.end_time)
+      appointment.end_index = this.timetable.map((t)=>t.time).indexOf(appointment.end_time)
+      appointment.children_appointments = this.children_appointments(appointment.start_index, appointment.end_index)
+
       store.dispatch('add_appointment', appointment)
     }
   },
@@ -137,69 +154,18 @@ Vue.component('appointment-form', {
   `
 })
 
-Vue.component('time-table__item', {
-  props: ['time', 'index', 'appointments'],
-  computed: {
-    isHidden() {
-      return this.time.slice(-2) == "00"     
-    }
-  },
-  template: `
-    <li class='time-table__item' v-bind:id='index'>
-      <div class='hour'>
-        <div class='hour__title' v-if='time.slice(-2) == "00"'>{{ time }}</div>
-        <div class='hour__title' v-else></div>
-        <div class='hour__line' v-bind:class="{ 'hour__line--hidden': !isHidden }">
-          <appointment v-for='(appointment, i) in appointments' v-if='appointment.start_index == index' v-bind:appointment="appointment" v-bind:index='i' ></appointment> 
-        </div>
-      </div>
-    </li>
-  `
-});
 
 new Vue({
   el: '#calendar',
   store,
   components: {timeInput},
-  data: {
-    timetable: [
-      "00:00", "00:30", "01:00", "01:30",
-      "02:00", "02:30", "03:00", "03:30", "04:00", "04:30", "05:00", "05:30", "06:00", "06:30",
-      "07:00", "07:30", "08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00",
-      "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00",
-      "18:30", "19:00", "19:30", "20:00", "20:30", "21:00", "21:30", "22:00", "22:30", "23:00", "23:30"
-    ]
-  },
-  methods: {
-    filled_times(start_time, end_time) {
-      let times = []
-      for(let i = start_time; i <= end_time; i++) {
-        times.push(i)
-      }
-      return times
-    }
-  },
   computed: {
-    appointments() {
-      let previous_appointments = []
-      for (let appointment of store.state.appointments) {
-        // get index of start and end times in timetable array
-        appointment.width = 100 
-        appointment.start_index = this.timetable.indexOf(appointment.start_time)
-        appointment.end_index = this.timetable.indexOf(appointment.end_time)
-        for(let previous of previous_appointments) {
-          // 4 - 6 .... 5-7  
-          let new_times = this.filled_times(appointment.start_index, appointment.end_index)
-          let previous_times = this.filled_times(previous.start_index, previous.end_index)
-          if(new_times.some(v => previous_times.includes(v))) {
-            appointment.width = appointment.width / 2
-            appointment.modifier = appointment.width
-            previous.width = previous.width / 2 
-          }
-        }
-        previous_appointments.push(appointment)
+    timetable() {
+      if(window.localStorage.length < 1) {
+        console.log("default!")
+        store.dispatch('default_appointments')
       }
-      return store.state.appointments
+      return store.state.timetable
     }
   }
 });

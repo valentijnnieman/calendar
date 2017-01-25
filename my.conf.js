@@ -16,7 +16,6 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
       'src/*.js',
-      'test/*.js',
       'tests/*.js',
       'tests/*.js'
     ],
@@ -40,7 +39,7 @@ module.exports = function(config) {
 
 
     // web server port
-    port: 9876,
+    //port: 9876,
 
 
     // enable / disable colors in the output (reporters and logs)
@@ -58,7 +57,7 @@ module.exports = function(config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['Chrome'],
+    //browsers: ['Chrome'],
 
 
     // Continuous Integration mode
@@ -67,6 +66,6 @@ module.exports = function(config) {
 
     // Concurrency level
     // how many browser should be started simultaneous
-    concurrency: Infinity
+    //concurrency: Infinity
   })
 }

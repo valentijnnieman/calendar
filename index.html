@@ -12,14 +12,14 @@
           <h5 class='time-table__title'>1 augustus 2016</h5>
           <ul>
             <template v-for='(time, index) in timetable'>
-              <time-table__item  v-bind:time="time" v-bind:index="index" v-bind:appointments="appointments"></time-table__item>
+              <time-table__item  :time="time.time" :index="index" :appointments="time.appointments" :alignment="time.alignment"></time-table__item>
             </template>
           </ul>
         </div>
       </div>
       <div class='small-12 medium-4 column lp-0'>
         <div class='appointment-panel'>
-          <appointment-form v-bind:time_options='timetable'></appointment-form>
+          <appointment-form :timetable='timetable'></appointment-form>
         </div>
       </div>
     </div>
