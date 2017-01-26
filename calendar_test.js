@@ -46,6 +46,8 @@
 
 	'use strict';
 
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 	var _vue = __webpack_require__(1);
 
 	var _vue2 = _interopRequireDefault(_vue);
@@ -62,34 +64,178 @@
 
 	var _timetable2 = _interopRequireDefault(_timetable);
 
-	var _appointment = __webpack_require__(8);
+	var _timeInput = __webpack_require__(8);
 
-	var _appointment2 = _interopRequireDefault(_appointment);
-
-	var _appointment_form = __webpack_require__(10);
-
-	var _appointment_form2 = _interopRequireDefault(_appointment_form);
-
-	var _appointment_modal = __webpack_require__(9);
-
-	var _appointment_modal2 = _interopRequireDefault(_appointment_modal);
-
-	var _timetable_item = __webpack_require__(11);
-
-	var _timetable_item2 = _interopRequireDefault(_timetable_item);
+	var _timeInput2 = _interopRequireDefault(_timeInput);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	_vue2.default.use(_vuex2.default);
 
+	_vue2.default.component('time-table__item', {
+	  props: ['time', 'index', 'appointments', 'alignment'],
+	  computed: {
+	    isHidden: function isHidden() {
+	      return this.time.slice(-2) == "00";
+	    }
+	  },
+	  template: '\n    <li class=\'time-table__item\' :id=\'index\'>\n      <div class=\'hour\'>\n        <div class=\'hour__title\' v-if=\'time.slice(-2) == "00"\'>{{ time }}</div>\n        <div class=\'hour__title\' v-else></div>\n        <div class=\'hour__line\' :class="{ \'hour__line--hidden\': !isHidden }">\n          <appointment v-for=\'(appointment, i) in appointments\' :appointment="appointment" :time_index=index :appointment_index=\'i\' :alignment="alignment"></appointment> \n        </div>\n      </div>\n    </li>\n  '
+	});
+
+	_vue2.default.component('appointment', {
+	  props: ['appointment', 'time_index', 'appointment_index', 'hidden', 'alignment'],
+	  data: function data() {
+	    return { show_modal: false };
+	  },
+
+	  methods: {
+	    toggle_modal: function toggle_modal() {
+	      this.show_modal = !this.show_modal;
+	    },
+	    next_appointment: function next_appointment() {
+	      var all_appointments = this.$store.getters.all_appointments;
+	    }
+	  },
+	  computed: {
+	    is_hidden: function is_hidden() {
+	      console.log(_typeof(this.hidden));
+	    },
+	    height: function height() {
+	      // magic css height style for appointment divs
+	      var difference = Math.abs(this.appointment.start_index - this.appointment.end_index);
+	      return difference * 25;
+	    },
+	    width: function width() {
+	      var _this = this;
+
+	      var all_appointments = this.$store.getters.all_appointments;
+	      var overlap_amount = 0;
+	      var _iteratorNormalCompletion = true;
+	      var _didIteratorError = false;
+	      var _iteratorError = undefined;
+
+	      try {
+	        for (var _iterator = all_appointments[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	          var taken_appointments = _step.value;
+	          var _iteratorNormalCompletion2 = true;
+	          var _didIteratorError2 = false;
+	          var _iteratorError2 = undefined;
+
+	          try {
+	            for (var _iterator2 = taken_appointments[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+	              var taken_appointment = _step2.value;
+
+	              var is_overlapping = taken_appointment.children_appointments.map(function (index) {
+	                return _this.appointment.children_appointments.includes(index);
+	              });
+	              console.log(is_overlapping);
+	              if (is_overlapping.some(function (t) {
+	                return t == true;
+	              })) {
+	                is_overlapping = true;
+	              } else is_overlapping = false;
+	              console.log(is_overlapping);
+
+	              if (is_overlapping) {
+	                console.log("appointment: ");
+	                console.log(this.appointment.title);
+	                console.log();
+	                overlap_amount++;
+	              }
+	            }
+	          } catch (err) {
+	            _didIteratorError2 = true;
+	            _iteratorError2 = err;
+	          } finally {
+	            try {
+	              if (!_iteratorNormalCompletion2 && _iterator2.return) {
+	                _iterator2.return();
+	              }
+	            } finally {
+	              if (_didIteratorError2) {
+	                throw _iteratorError2;
+	              }
+	            }
+	          }
+	        }
+	      } catch (err) {
+	        _didIteratorError = true;
+	        _iteratorError = err;
+	      } finally {
+	        try {
+	          if (!_iteratorNormalCompletion && _iterator.return) {
+	            _iterator.return();
+	          }
+	        } finally {
+	          if (_didIteratorError) {
+	            throw _iteratorError;
+	          }
+	        }
+	      }
+
+	      return overlap_amount;
+	    },
+	    modifier: function modifier() {
+	      return this.appointment.modifier + '%';
+	    }
+	  },
+	  template: '\n    <transition name=\'appointment\'>\n      <div class=\'appointment\' :style="{height: height, width: 100 / width + \'%\', float: alignment}" v-on:click=\'toggle_modal\'>\n        <div class=\'appointment-top\'>\n          <div class=\'appointment-top__title\'>{{ appointment.title }}</div>\n          <div class=\'appointment-top__time\'>{{appointment.start_time}}-{{appointment.end_time}}</div>\n        </div>\n        <p class=\'appointment__description\'>{{ appointment.description }}</p>\n        <div class=\'modal-container\' v-if="show_modal == true">\n          <appointment-modal :appointment=\'appointment\' :time_index=\'time_index\' :appointment_index=\'appointment_index\'></appointment-modal>\n        </div>\n      </div>\n    </transition>\n  '
+	});
+
+	_vue2.default.component('appointment-modal', {
+	  props: ['appointment', 'time_index', 'appointment_index'],
+	  methods: {
+	    delete_appointment: function delete_appointment() {
+	      _timetable2.default.dispatch('delete_appointment', this.time_index, this.appointment_index);
+	    }
+	  },
+	  template: '\n    <div class=\'appointment-modal\'>\n      <p class=\'appointment__title\'>{{ appointment.title }}<span class=\'appointment__time cblack\'>{{appointment.start_time}}-{{appointment.end_time}}</span></p>\n      <p class=\'appointment__description cblack\'>{{ appointment.description }}</p>\n      <button class=\'button button--red\' v-on:click=\'delete_appointment\'>Delete</button>\n    </div>\n  '
+	});
+
+	_vue2.default.component('appointment-form', {
+	  props: ['timetable'],
+	  methods: {
+	    children_appointments: function children_appointments(start_time, end_time) {
+	      var times = [start_time];
+	      for (var i = start_time + 1; i < end_time; i++) {
+	        times.push(i);
+	      }
+	      return times;
+	    },
+	    add_appointment: function add_appointment() {
+	      var appointment = Object.assign({}, this.new_appointment); // copy/clone appointment so it saves
+	      // compute some attributes for use in rendering
+	      //appointment.start_index = this.timetable.indexOf(appointment.start_time)
+	      appointment.start_index = this.timetable.map(function (t) {
+	        return t.time;
+	      }).indexOf(appointment.start_time);
+	      //appointment.end_index = this.timetable.indexOf(appointment.end_time)
+	      appointment.end_index = this.timetable.map(function (t) {
+	        return t.time;
+	      }).indexOf(appointment.end_time);
+	      appointment.children_appointments = this.children_appointments(appointment.start_index, appointment.end_index);
+
+	      _timetable2.default.dispatch('add_appointment', appointment);
+	    }
+	  },
+	  data: function data() {
+	    return {
+	      new_appointment: {
+	        title: "",
+	        start_time: "00:00",
+	        end_time: "02:00",
+	        description: ""
+	      }
+	    };
+	  },
+
+	  template: '\n    <div>\n      <label class=\'appointment-panel__label\' for=\'title\'>Title</label>\n      <input class=\'appointment-panel__input\' v-model=\'new_appointment.title\' id=\'title\'> \n      <label class=\'appointment-panel__label\' for=\'start\'>Start time</label>\n      <div class=\'calendar-icon\'></div>\n      <time-input v-model=\'new_appointment.start_time\'></time-input>\n      <label class=\'appointment-panel__label\' for=\'end\'>End time</label>\n      <div class=\'calendar-icon\'></div>\n      <time-input v-model=\'new_appointment.end_time\'></time-input>\n      <label class=\'appointment-panel__label\' for=\'description\'>Description</label>\n      <textarea class=\'appointment-panel__input appointment-panel__input--description\' v-model=\'new_appointment.description\' id=\'description\'></textarea>\n      <button class=\'button button--green\' v-on:click=\'add_appointment\'>Save</button>\n    </div>\n  '
+	});
+
 	new _vue2.default({
 	  el: '#calendar',
 	  store: _timetable2.default,
-	  components: {
-	    'appointment': _appointment2.default,
-	    'appointment-form': _appointment_form2.default,
-	    'appointment-modal': _appointment_modal2.default,
-	    'time-table__item': _timetable_item2.default },
+	  components: { timeInput: _timeInput2.default },
 	  data: {
 	    appointment_panel_show: true
 	  },
@@ -12168,237 +12314,15 @@
 
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-	var _appointment_modal = __webpack_require__(9);
-
-	var _appointment_modal2 = _interopRequireDefault(_appointment_modal);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	exports.default = {
-	  props: ['appointment', 'time_index', 'appointment_index', 'hidden', 'alignment'],
-	  data: function data() {
-	    return { show_modal: false };
-	  },
-
-	  components: {
-	    'appointment-modal': _appointment_modal2.default
-	  },
-	  methods: {
-	    toggle_modal: function toggle_modal() {
-	      this.show_modal = !this.show_modal;
-	    }
-	  },
-	  computed: {
-	    is_hidden: function is_hidden() {
-	      console.log(_typeof(this.hidden));
-	    },
-	    height: function height() {
-	      // magic css height style for appointment divs
-	      var difference = Math.abs(this.appointment.start_index - this.appointment.end_index);
-	      return difference * 25;
-	    },
-	    width: function width() {
-	      var _this = this;
-
-	      var all_appointments = this.$store.getters.all_appointments;
-	      var overlap_amount = 0;
-	      var _iteratorNormalCompletion = true;
-	      var _didIteratorError = false;
-	      var _iteratorError = undefined;
-
-	      try {
-	        for (var _iterator = all_appointments[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-	          var taken_appointments = _step.value;
-	          var _iteratorNormalCompletion2 = true;
-	          var _didIteratorError2 = false;
-	          var _iteratorError2 = undefined;
-
-	          try {
-	            for (var _iterator2 = taken_appointments[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-	              var taken_appointment = _step2.value;
-
-	              var is_overlapping = taken_appointment.children_appointments.map(function (index) {
-	                return _this.appointment.children_appointments.includes(index);
-	              });
-	              console.log(is_overlapping);
-	              if (is_overlapping.some(function (t) {
-	                return t == true;
-	              })) {
-	                is_overlapping = true;
-	              } else is_overlapping = false;
-	              console.log(is_overlapping);
-
-	              if (is_overlapping) {
-	                console.log("appointment: ");
-	                console.log(this.appointment.title);
-	                console.log();
-	                overlap_amount++;
-	              }
-	            }
-	          } catch (err) {
-	            _didIteratorError2 = true;
-	            _iteratorError2 = err;
-	          } finally {
-	            try {
-	              if (!_iteratorNormalCompletion2 && _iterator2.return) {
-	                _iterator2.return();
-	              }
-	            } finally {
-	              if (_didIteratorError2) {
-	                throw _iteratorError2;
-	              }
-	            }
-	          }
-	        }
-	      } catch (err) {
-	        _didIteratorError = true;
-	        _iteratorError = err;
-	      } finally {
-	        try {
-	          if (!_iteratorNormalCompletion && _iterator.return) {
-	            _iterator.return();
-	          }
-	        } finally {
-	          if (_didIteratorError) {
-	            throw _iteratorError;
-	          }
-	        }
-	      }
-
-	      return overlap_amount;
-	    },
-	    modifier: function modifier() {
-	      return this.appointment.modifier + '%';
-	    }
-	  },
-	  template: '\n    <transition name=\'appointment\'>\n      <div class=\'appointment\' :style="{height: height, width: 100 / width + \'%\', float: alignment}" v-on:click=\'toggle_modal\'>\n        <div class=\'appointment-top\'>\n          <div class=\'appointment-top__title\'>{{ appointment.title }}</div>\n          <div class=\'appointment-top__time\'>{{appointment.start_time}}-{{appointment.end_time}}</div>\n        </div>\n        <p class=\'appointment__description\'>{{ appointment.description }}</p>\n        <div class=\'modal-container\' v-if="show_modal == true">\n          <appointment-modal :appointment=\'appointment\' :time_index=\'time_index\' :appointment_index=\'appointment_index\'></appointment-modal>\n        </div>\n      </div>\n    </transition>\n  '
-	};
-
-/***/ },
-/* 9 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _timetable = __webpack_require__(7);
-
-	var _timetable2 = _interopRequireDefault(_timetable);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	exports.default = {
-	  props: ['appointment', 'time_index', 'appointment_index'],
-	  methods: {
-	    delete_appointment: function delete_appointment() {
-	      _timetable2.default.dispatch('delete_appointment', this.time_index, this.appointment_index);
-	    }
-	  },
-	  template: '\n    <div class=\'appointment-modal\'>\n      <p class=\'appointment__title\'>{{ appointment.title }}<span class=\'appointment__time cblack\'>{{appointment.start_time}}-{{appointment.end_time}}</span></p>\n      <p class=\'appointment__description cblack\'>{{ appointment.description }}</p>\n      <button class=\'button button--red\' v-on:click=\'delete_appointment\'>Delete</button>\n    </div>\n  '
-	};
-
-/***/ },
-/* 10 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
 	var _vue = __webpack_require__(1);
 
 	var _vue2 = _interopRequireDefault(_vue);
 
-	var _timetable = __webpack_require__(7);
-
-	var _timetable2 = _interopRequireDefault(_timetable);
-
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	exports.default = {
-	  props: ['timetable'],
-	  methods: {
-	    children_appointments: function children_appointments(start_time, end_time) {
-	      var times = [start_time];
-	      for (var i = start_time + 1; i < end_time; i++) {
-	        times.push(i);
-	      }
-	      return times;
-	    },
-	    add_appointment: function add_appointment() {
-	      var appointment = Object.assign({}, this.new_appointment); // copy/clone appointment so it saves
-	      // compute some attributes for use in rendering
-	      //appointment.start_index = this.timetable.indexOf(appointment.start_time)
-	      appointment.start_index = this.timetable.map(function (t) {
-	        return t.time;
-	      }).indexOf(appointment.start_time);
-	      //appointment.end_index = this.timetable.indexOf(appointment.end_time)
-	      appointment.end_index = this.timetable.map(function (t) {
-	        return t.time;
-	      }).indexOf(appointment.end_time);
-	      appointment.children_appointments = this.children_appointments(appointment.start_index, appointment.end_index);
-
-	      _timetable2.default.dispatch('add_appointment', appointment);
-	    }
-	  },
-	  data: function data() {
-	    return {
-	      new_appointment: {
-	        title: "",
-	        start_time: "00:00",
-	        end_time: "02:00",
-	        description: ""
-	      }
-	    };
-	  },
-
-	  template: '\n    <div>\n      <label class=\'appointment-panel__label\' for=\'title\'>Title</label>\n      <input class=\'appointment-panel__input\' v-model=\'new_appointment.title\' id=\'title\'> \n      <label class=\'appointment-panel__label\' for=\'start\'>Start time</label>\n      <div class=\'calendar-icon\'></div>\n      <time-input v-model=\'new_appointment.start_time\'></time-input>\n      <label class=\'appointment-panel__label\' for=\'end\'>End time</label>\n      <div class=\'calendar-icon\'></div>\n      <time-input v-model=\'new_appointment.end_time\'></time-input>\n      <label class=\'appointment-panel__label\' for=\'description\'>Description</label>\n      <textarea class=\'appointment-panel__input appointment-panel__input--description\' v-model=\'new_appointment.description\' id=\'description\'></textarea>\n      <button class=\'button button--green\' v-on:click=\'add_appointment\'>Save</button>\n    </div>\n  '
-	};
-
-
-	_vue2.default.component('time-input', {
+	module.exports = _vue2.default.component('time-input', {
 	  template: '\n    <select class=\'appointment-panel__input appointment-panel__input--calendar\' @input="$emit(\'input\', $event.target.value)">\n      <option value="00:00">00:00</option>\n      <option value="00:30">00:30</option>\n      <option value="01:00">01:00</option>\n      <option value="01:30">01:30</option>\n      <option value="02:00">02:00</option>\n      <option value="02:30">02:30</option>\n      <option value="03:00">03:00</option>\n      <option value="03:30">03:30</option>\n      <option value="04:00">04:00</option>\n      <option value="04:30">04:30</option>\n      <option value="05:00">05:00</option>\n      <option value="05:30">05:30</option>\n      <option value="06:00">06:00</option>\n      <option value="06:30">06:30</option>\n      <option value="07:00">07:00</option>\n      <option value="07:30">07:30</option>\n      <option value="08:00">08:00</option>\n      <option value="08:30">08:30</option>\n      <option value="09:00">09:00</option>\n      <option value="09:30">09:30</option>\n      <option value="10:00">10:00</option>\n      <option value="10:30">10:30</option>\n      <option value="11:00">11:00</option>\n      <option value="11:30">11:30</option>\n      <option value="12:00">12:00</option>\n      <option value="12:30">12:30</option>\n      <option value="13:00">13:00</option>\n      <option value="13:30">13:30</option>\n      <option value="14:00">14:00</option>\n      <option value="14:30">14:30</option>\n      <option value="15:00">15:00</option>\n      <option value="15:30">15:30</option>\n      <option value="16:00">16:00</option>\n      <option value="16:30">16:30</option>\n      <option value="17:00">17:00</option>\n      <option value="17:30">17:30</option>\n      <option value="18:00">18:00</option>\n      <option value="18:30">18:30</option>\n      <option value="19:00">19:00</option>\n      <option value="19:30">19:30</option>\n      <option value="20:00">20:00</option>\n      <option value="20:30">20:30</option>\n      <option value="21:00">21:00</option>\n      <option value="21:30">21:30</option>\n      <option value="22:00">22:00</option>\n      <option value="22:30">22:30</option>\n      <option value="23:00">23:00</option>\n      <option value="23:30">23:30</option>\n    </select>\n  '
 	});
-
-/***/ },
-/* 11 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _appointment = __webpack_require__(8);
-
-	var _appointment2 = _interopRequireDefault(_appointment);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	exports.default = {
-	  props: ['time', 'index', 'appointments', 'alignment'],
-	  components: {
-	    'appointment': _appointment2.default
-	  },
-	  computed: {
-	    isHidden: function isHidden() {
-	      return this.time.slice(-2) == "00";
-	    }
-	  },
-	  template: '\n    <li class=\'time-table__item\' :id=\'index\'>\n      <div class=\'hour\'>\n        <div class=\'hour__title\' v-if=\'time.slice(-2) == "00"\'>{{ time }}</div>\n        <div class=\'hour__title\' v-else></div>\n        <div class=\'hour__line\' :class="{ \'hour__line--hidden\': !isHidden }">\n          <appointment v-for=\'(appointment, i) in appointments\' :appointment="appointment" :time_index=index :appointment_index=\'i\' :alignment="alignment"></appointment> \n        </div>\n      </div>\n    </li>\n  '
-	};
 
 /***/ }
 /******/ ]);
