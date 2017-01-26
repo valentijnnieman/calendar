@@ -23,7 +23,7 @@ describe('timetable_item', () => {
   })
 
   it('has a method that decides if it should be hidden or not', () => {
-    expect(typeof timetable_item.computed.isHidden).toBe('function')
+    expect(typeof timetable_item.computed.is_hidden).toBe('function')
   })
 })
 

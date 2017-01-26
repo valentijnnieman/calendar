@@ -95,7 +95,7 @@
 	  },
 	  computed: {
 	    timetable: function timetable() {
-	      if (window.localStorage.length < 1) {
+	      if (window.localStorage.getItem('vuex') == null) {
 	        _timetable2.default.dispatch('default_appointments');
 	      }
 	      return _timetable2.default.state.timetable;
@@ -12186,7 +12186,7 @@
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	exports.default = {
-	  props: ['appointment', 'time_index', 'appointment_index', 'hidden', 'alignment'],
+	  props: ['appointment', 'time_index', 'appointment_index', 'alignment'],
 	  data: function data() {
 	    return { show_modal: false };
 	  },
@@ -12390,11 +12390,11 @@
 	    'appointment': _appointment2.default
 	  },
 	  computed: {
-	    isHidden: function isHidden() {
+	    is_hidden: function is_hidden() {
 	      return this.time.slice(-2) == "00";
 	    }
 	  },
-	  template: '\n    <li class=\'time-table__item\' :id=\'index\'>\n      <div class=\'hour\'>\n        <div class=\'hour__title\' v-if=\'time.slice(-2) == "00"\'>{{ time }}</div>\n        <div class=\'hour__title\' v-else></div>\n        <div class=\'hour__line\' :class="{ \'hour__line--hidden\': !isHidden }">\n          <appointment v-for=\'(appointment, i) in appointments\' :appointment="appointment" :time_index=index :appointment_index=\'i\' :alignment="alignment"></appointment> \n        </div>\n      </div>\n    </li>\n  '
+	  template: '\n    <li class=\'time-table__item\' :id=\'index\'>\n      <div class=\'hour\'>\n        <div class=\'hour__title\' v-if=\'time.slice(-2) == "00"\'>{{ time }}</div>\n        <div class=\'hour__title\' v-else></div>\n        <div class=\'hour__line\' :class="{ \'hour__line--hidden\': !is_hidden }">\n          <appointment v-for=\'(appointment, i) in appointments\' :appointment="appointment" :time_index=index :appointment_index=\'i\' :alignment="alignment"></appointment> \n        </div>\n      </div>\n    </li>\n  '
 	};
 
 /***/ }

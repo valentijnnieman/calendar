@@ -1,7 +1,7 @@
 import appointment_modal from './appointment_modal.js'
 
 export default {
-  props: ['appointment', 'time_index', 'appointment_index', 'hidden', 'alignment'],
+  props: ['appointment', 'time_index', 'appointment_index', 'alignment'],
   data() { return { show_modal: false } },
   components: {
     'appointment_modal': appointment_modal

@@ -21,7 +21,7 @@ describe('appointment', () => {
   })
 
   it('has the correct amount of props', () => {
-    expect(appointment.props).toEqual(['appointment', 'time_index', 'appointment_index', 'hidden', 'alignment'])
+    expect(appointment.props).toEqual(['appointment', 'time_index', 'appointment_index', 'alignment'])
   })
 
   it('has an appointment_modal component loaded', () => {

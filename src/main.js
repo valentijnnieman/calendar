@@ -23,7 +23,7 @@ new Vue({
   },
   computed: {
     timetable() {
-      if(window.localStorage.length < 1) {
+      if(window.localStorage.getItem('vuex') == null) {
         store.dispatch('default_appointments')
       }
       return store.state.timetable
