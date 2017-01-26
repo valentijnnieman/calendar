@@ -60,10 +60,18 @@ module.exports = new Vuex.Store({
   },
   mutations: {
     ADD_APPOINTMENT(state, new_appointment) {
+      if(new_appointment.end_index < new_appointment.start_index) {
+        // flip the start and end times
+        let end_index = new_appointment.end_index
+        let end_time = new_appointment.end_time
+        new_appointment.end_index = new_appointment.start_index
+        new_appointment.end_time = new_appointment.start_time
+        new_appointment.start_index = end_index
+        new_appointment.start_time = end_time
+      }
       state.timetable[new_appointment.start_index].appointments.push(new_appointment)
     },
     DELETE_APPOINTMENT(state, time_index, appointment_index) {
-      // TO-DO: fix this
       if(time_index != -1) {
         state.timetable[time_index].appointments.splice(appointment_index, 1)
       }

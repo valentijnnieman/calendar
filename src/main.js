@@ -24,7 +24,6 @@ new Vue({
   computed: {
     timetable() {
       if(window.localStorage.length < 1) {
-        console.log("default!")
         store.dispatch('default_appointments')
       }
       return store.state.timetable

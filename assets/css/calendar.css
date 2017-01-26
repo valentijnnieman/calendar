@@ -5,6 +5,8 @@
   background: #FFFFFF;
   border: 1px solid rgba(181,181,181,0.50);
   max-width: 540px;
+  margin-bottom: 40px;
+  margin-right: 16px;
 }
 .time-table__title {
   border-bottom: 1px solid rgba(181,181,181,0.5);
@@ -25,7 +27,7 @@
 
 .hour {
   width: 100%;
-  height: 24px;
+  height: 25px;
   display: block;
 }
 .hour__title {
@@ -82,19 +84,47 @@
 .appointment__description {
   font-size: 12px;
   color: rgba(255,255,255,0.8);
-  line-height: 1.4;
+  line-height: 1.5;
   clear: both;
+  height: 100%;
 }
 .appointment-panel {
   background: #F8F8F8;
   border: 1px solid #DADADA;
   border-top-right-radius: 4px;
   border-bottom-right-radius: 4px;
-  height: 630px;
-  max-width: 240px;
-  position: relative;
-  top: 114px;
+  position: absolute;
   padding: 20px;
+  padding-left: 25%;
+  top: 80px;
+  width: 93.5%;
+  height: 750px;
+  margin-left: 14px;
+  margin-right: 16px;
+}
+@media screen and (min-width: 600px) {
+  .time-table {
+    margin-right: 0px;
+  }
+  .appointment-panel {
+    max-width: 240px;
+    position: relative;
+    top: 114px;
+    width: auto;
+    height: 630px;
+    padding: 20px;
+    margin-left: 0px;
+    margin-right: 0px;
+  }
+  .appointment-panel-enter-active, .appointment-panel-leave-active{
+    transition: all 0.5s;
+    z-index: -1;
+    left: 0px;
+  }
+  .appointment-panel-enter, .appointment-panel-leave-to /* .fade-leave-active in <2.1.8 */ {
+    left: -240px;
+    z-index: -1;
+  }
 }
 .appointment-panel__label {
   font-size: 14px;
@@ -156,7 +186,8 @@ button.button--round:hover {
   margin-bottom: 5px;
 }
 .button--red{
-  background-color: red;
+  background-color: #FF6255;
+  color: white;
 }
 .modal-container {
   height: 100vh;
@@ -178,20 +209,13 @@ button.button--round:hover {
   left: 20vw;
   padding: 20px;
 }
-.appointment-panel-enter-active, .appointment-panel-leave-active{
-  transition: all 0.5s;
-  z-index: -1;
-  left: 0px;
-}
-.appointment-panel-enter, .appointment-panel-leave-to /* .fade-leave-active in <2.1.8 */ {
-  left: -240px;
-  z-index: -1;
-}
 
-.appointment-enter-active, .appointment-leave-active {
+/* ANIMATIONS */
+
+.appointment-enter-active, .appointment-leave-active, .appointment-modal-enter-active, .appointment-modal-leave-active{
   transition: all .2s;
 }
-.appointment-enter, .appointment-leave-to /* .fade-leave-active in <2.1.8 */ {
+.appointment-enter, .appointment-leave-to, .appointment-modal-enter, .appointment-modal-leave-to {
   opacity: 0;
   transform: scale(1.1);
 }

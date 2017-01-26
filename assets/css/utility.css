@@ -14,6 +14,10 @@ body {
   padding-left: 0px;
 }
 
+.mb-10 {
+  margin-bottom: 10px;
+}
+
 .cblack {
   color: black;
 }

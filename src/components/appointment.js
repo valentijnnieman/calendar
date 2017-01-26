@@ -12,9 +12,6 @@ export default {
     }
   },
   computed: {
-    is_hidden() {
-      console.log(typeof(this.hidden))
-    },
     height() {
       // magic css height style for appointment divs
       let difference = Math.abs(this.appointment.start_index - this.appointment.end_index)
@@ -26,16 +23,11 @@ export default {
       for(let taken_appointments of all_appointments ) {
         for(let taken_appointment of taken_appointments) {
           let is_overlapping = taken_appointment.children_appointments.map((index)=> this.appointment.children_appointments.includes(index))
-          console.log(is_overlapping)
           if(is_overlapping.some((t)=>t == true)) {
             is_overlapping = true
           } else is_overlapping = false
-          console.log(is_overlapping)
 
           if(is_overlapping) {
-            console.log("appointment: ")
-            console.log(this.appointment.title)
-            console.log()
             overlap_amount++
           }
         }

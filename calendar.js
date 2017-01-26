@@ -96,7 +96,6 @@
 	  computed: {
 	    timetable: function timetable() {
 	      if (window.localStorage.length < 1) {
-	        console.log("default!");
 	        _timetable2.default.dispatch('default_appointments');
 	      }
 	      return _timetable2.default.state.timetable;
@@ -12055,10 +12054,18 @@
 	  },
 	  mutations: {
 	    ADD_APPOINTMENT: function ADD_APPOINTMENT(state, new_appointment) {
+	      if (new_appointment.end_index < new_appointment.start_index) {
+	        // flip the start and end times
+	        var end_index = new_appointment.end_index;
+	        var end_time = new_appointment.end_time;
+	        new_appointment.end_index = new_appointment.start_index;
+	        new_appointment.end_time = new_appointment.start_time;
+	        new_appointment.start_index = end_index;
+	        new_appointment.start_time = end_time;
+	      }
 	      state.timetable[new_appointment.start_index].appointments.push(new_appointment);
 	    },
 	    DELETE_APPOINTMENT: function DELETE_APPOINTMENT(state, time_index, appointment_index) {
-	      // TO-DO: fix this
 	      if (time_index != -1) {
 	        state.timetable[time_index].appointments.splice(appointment_index, 1);
 	      }
@@ -12172,8 +12179,6 @@
 	  value: true
 	});
 
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
 	var _appointment_modal = __webpack_require__(9);
 
 	var _appointment_modal2 = _interopRequireDefault(_appointment_modal);
@@ -12195,9 +12200,6 @@
 	    }
 	  },
 	  computed: {
-	    is_hidden: function is_hidden() {
-	      console.log(_typeof(this.hidden));
-	    },
 	    height: function height() {
 	      // magic css height style for appointment divs
 	      var difference = Math.abs(this.appointment.start_index - this.appointment.end_index);
@@ -12226,18 +12228,13 @@
 	              var is_overlapping = taken_appointment.children_appointments.map(function (index) {
 	                return _this.appointment.children_appointments.includes(index);
 	              });
-	              console.log(is_overlapping);
 	              if (is_overlapping.some(function (t) {
 	                return t == true;
 	              })) {
 	                is_overlapping = true;
 	              } else is_overlapping = false;
-	              console.log(is_overlapping);
 
 	              if (is_overlapping) {
-	                console.log("appointment: ");
-	                console.log(this.appointment.title);
-	                console.log();
 	                overlap_amount++;
 	              }
 	            }
@@ -12303,7 +12300,7 @@
 	      _timetable2.default.dispatch('delete_appointment', this.time_index, this.appointment_index);
 	    }
 	  },
-	  template: '\n    <div class=\'appointment-modal\'>\n      <p class=\'appointment__title\'>{{ appointment.title }}<span class=\'appointment__time cblack\'>{{appointment.start_time}}-{{appointment.end_time}}</span></p>\n      <p class=\'appointment__description cblack\'>{{ appointment.description }}</p>\n      <button class=\'button button--red\' v-on:click=\'delete_appointment\'>Delete</button>\n    </div>\n  '
+	  template: '\n    <transition name=\'appointment-modal\'>\n      <div class=\'appointment-modal\'>\n          <div class=\'appointment-top mb-10\'>\n            <div class=\'appointment-top__title cblack\'>{{ appointment.title }}</div>\n            <div class=\'appointment-top__time cblack\'>{{appointment.start_time}}-{{appointment.end_time}}</div>\n          </div>\n          <p class=\'appointment__description cblack\'>{{ appointment.description }}</p>\n        <button class=\'button button--red\' v-on:click=\'delete_appointment\'>Delete</button>\n      </div>\n    </transition>\n  '
 	};
 
 /***/ },
