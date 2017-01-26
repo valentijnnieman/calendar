@@ -4,7 +4,7 @@ export default {
   props: ['appointment', 'time_index', 'appointment_index', 'hidden', 'alignment'],
   data() { return { show_modal: false } },
   components: {
-    'appointment-modal': appointment_modal
+    'appointment_modal': appointment_modal
   },
   methods: {
     toggle_modal() {
@@ -55,7 +55,7 @@ export default {
         </div>
         <p class='appointment__description'>{{ appointment.description }}</p>
         <div class='modal-container' v-if="show_modal == true">
-          <appointment-modal :appointment='appointment' :time_index='time_index' :appointment_index='appointment_index'></appointment-modal>
+          <appointment_modal :appointment='appointment' :time_index='time_index' :appointment_index='appointment_index'></appointment_modal>
         </div>
       </div>
     </transition>

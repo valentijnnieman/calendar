@@ -12187,7 +12187,7 @@
 	  },
 
 	  components: {
-	    'appointment-modal': _appointment_modal2.default
+	    'appointment_modal': _appointment_modal2.default
 	  },
 	  methods: {
 	    toggle_modal: function toggle_modal() {
@@ -12277,7 +12277,7 @@
 	      return this.appointment.modifier + '%';
 	    }
 	  },
-	  template: '\n    <transition name=\'appointment\'>\n      <div class=\'appointment\' :style="{height: height, width: 100 / width + \'%\', float: alignment}" v-on:click=\'toggle_modal\'>\n        <div class=\'appointment-top\'>\n          <div class=\'appointment-top__title\'>{{ appointment.title }}</div>\n          <div class=\'appointment-top__time\'>{{appointment.start_time}}-{{appointment.end_time}}</div>\n        </div>\n        <p class=\'appointment__description\'>{{ appointment.description }}</p>\n        <div class=\'modal-container\' v-if="show_modal == true">\n          <appointment-modal :appointment=\'appointment\' :time_index=\'time_index\' :appointment_index=\'appointment_index\'></appointment-modal>\n        </div>\n      </div>\n    </transition>\n  '
+	  template: '\n    <transition name=\'appointment\'>\n      <div class=\'appointment\' :style="{height: height, width: 100 / width + \'%\', float: alignment}" v-on:click=\'toggle_modal\'>\n        <div class=\'appointment-top\'>\n          <div class=\'appointment-top__title\'>{{ appointment.title }}</div>\n          <div class=\'appointment-top__time\'>{{appointment.start_time}}-{{appointment.end_time}}</div>\n        </div>\n        <p class=\'appointment__description\'>{{ appointment.description }}</p>\n        <div class=\'modal-container\' v-if="show_modal == true">\n          <appointment_modal :appointment=\'appointment\' :time_index=\'time_index\' :appointment_index=\'appointment_index\'></appointment_modal>\n        </div>\n      </div>\n    </transition>\n  '
 	};
 
 /***/ },
