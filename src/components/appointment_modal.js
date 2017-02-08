@@ -14,7 +14,7 @@ export default{
             <div class='appointment-top__title cblack'>{{ appointment.title }}</div>
             <div class='appointment-top__time cblack'>{{appointment.start_time}}-{{appointment.end_time}}</div>
           </div>
-          <p class='appointment__description cblack'>{{ appointment.description }}</p>
+          <p class='appointment__description appointment__description--modal cblack'>{{ appointment.description }}</p>
         <button class='button button--red' v-on:click='delete_appointment'>Delete</button>
       </div>
     </transition>

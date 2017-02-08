@@ -12300,7 +12300,7 @@
 	      _timetable2.default.dispatch('delete_appointment', this.time_index, this.appointment_index);
 	    }
 	  },
-	  template: '\n    <transition name=\'appointment-modal\'>\n      <div class=\'appointment-modal\'>\n          <div class=\'appointment-top mb-10\'>\n            <div class=\'appointment-top__title cblack\'>{{ appointment.title }}</div>\n            <div class=\'appointment-top__time cblack\'>{{appointment.start_time}}-{{appointment.end_time}}</div>\n          </div>\n          <p class=\'appointment__description cblack\'>{{ appointment.description }}</p>\n        <button class=\'button button--red\' v-on:click=\'delete_appointment\'>Delete</button>\n      </div>\n    </transition>\n  '
+	  template: '\n    <transition name=\'appointment-modal\'>\n      <div class=\'appointment-modal\'>\n          <div class=\'appointment-top mb-10\'>\n            <div class=\'appointment-top__title cblack\'>{{ appointment.title }}</div>\n            <div class=\'appointment-top__time cblack\'>{{appointment.start_time}}-{{appointment.end_time}}</div>\n          </div>\n          <p class=\'appointment__description appointment__description--modal cblack\'>{{ appointment.description }}</p>\n        <button class=\'button button--red\' v-on:click=\'delete_appointment\'>Delete</button>\n      </div>\n    </transition>\n  '
 	};
 
 /***/ },

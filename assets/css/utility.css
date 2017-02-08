@@ -4,7 +4,11 @@ body {
   color: white;
   background-color: #4A5170;
   padding-top: 46px;
-  font-family: 'Open Sans', sans-serif;
+  font-family: "Open Sans", sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Open Sans", sans-serif;
 }
 
 .rp-0{
