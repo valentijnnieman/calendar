@@ -91,7 +91,7 @@
 	    'appointment-modal': _appointment_modal2.default,
 	    'time-table__item': _timetable_item2.default },
 	  data: {
-	    appointment_panel_show: true
+	    appointment_panel_show: false
 	  },
 	  computed: {
 	    timetable: function timetable() {
@@ -12080,14 +12080,14 @@
 	    default_appointments: function default_appointments(_ref2) {
 	      var commit = _ref2.commit;
 
-	      var new_appointments = [{ title: "Sprint retrospective",
+	      var new_appointments = [{ title: "Bugfix Hour",
 	        start_time: "09:30",
 	        start_index: 19,
 	        end_time: "10:30",
 	        end_index: 21,
 	        children_appointments: [19, 20, 21],
 	        description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam lobortis imperdiet consectetur. Donec eget accumsan dui. Proin consequat augue"
-	      }, { title: "All hands",
+	      }, { title: "Sprint Planning",
 	        start_time: "14:00",
 	        start_index: 28,
 	        end_time: "15:00",

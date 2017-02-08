@@ -19,7 +19,7 @@ new Vue({
     'appointment-modal': appointment_modal,
     'time-table__item': timetable_item},
   data: {
-    appointment_panel_show: true 
+    appointment_panel_show: false 
   },
   computed: {
     timetable() {
