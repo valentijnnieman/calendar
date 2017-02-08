@@ -1,7 +1,7 @@
 {
-  "name": "blendle-calendar",
+  "name": "calendar",
   "version": "0.0.1",
-  "description": "challenge for blendle :)",
+  "description": "day planner written in vue",
   "main": "index.js",
   "watch": {
     "build": "src/**/*.js"

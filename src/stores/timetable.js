@@ -83,7 +83,7 @@ module.exports = new Vuex.Store({
     },
     default_appointments({commit}) {
       let new_appointments = [ 
-        { title: "Sprint retrospective", 
+        { title: "Bugfix Hour", 
           start_time: "09:30",
           start_index: 19,
           end_time: "10:30",
@@ -91,7 +91,7 @@ module.exports = new Vuex.Store({
           children_appointments: [19, 20, 21],
           description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam lobortis imperdiet consectetur. Donec eget accumsan dui. Proin consequat augue"
         },
-        { title: "All hands", 
+        { title: "Sprint Planning", 
           start_time: "14:00", 
           start_index: 28,
           end_time: "15:00", 
